@@ -11,3 +11,9 @@ class Homepage(APIView):
             'details_view':'detail/<str:key>'
         }
         return Response(helpertext)
+    
+    
+
+    
+    
+    
