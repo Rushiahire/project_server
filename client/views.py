@@ -6,7 +6,7 @@ import base64
 
 class FetchProduct(APIView):
     def __init__(self):
-        self.bucket = storage.bucket('shopheaven-ccc82.appspot.com')
+        self.bucket = storage.bucket('ecommerce-c7837.appspot.com')
         self.db = firestore.client()
         self.product_info = self.db.collection('product_info')
         self.doc_id = [doc.id for doc in self.product_info.stream()]
@@ -26,7 +26,6 @@ class FetchProduct(APIView):
             })
             if len(product_list)==6:
                 break
-        # print(product_list)
         return Response(product_list)
     
     
