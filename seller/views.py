@@ -5,14 +5,14 @@ import random
 import string
 import base64
 
-# gs://shopheaven-ccc82.appspot.com
+# shopheaven-ccc82.appspot.com
 # gs://ecommerce-c7837.appspot.com
 
 
 
 class NewProduct(APIView):
     def __init__(self):
-        self.bucket = storage.bucket('ecommerce-c7837.appspot.com')
+        self.bucket = storage.bucket('shopheaven-ccc82.appspot.com')
         self.db = firestore.client()
         self.product_info = self.db.collection('product_info')
         
