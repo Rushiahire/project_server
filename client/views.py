@@ -1,19 +1,32 @@
 from django.http import response
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from firebase_admin import storage,firestore
+import base64
 
-
-class Homepage(APIView):
+class FetchProduct(APIView):
+    def __init__(self):
+        self.bucket = storage.bucket('shopheaven-ccc82.appspot.com')
+        self.db = firestore.client()
+        self.product_info = self.db.collection('product_info')
+        self.doc_id = [doc.id for doc in self.product_info.stream()]
+    
     def get(self,request):
-        helpertext={
-            'homepage':'/',
-            'view_all_carts':'viewcart',
-            'details_view':'detail/<str:key>'
-        }
-        return Response(helpertext)
-    
-    
+        product_list = []
+        
+        for doc_name in self.doc_id:
+            info = self.product_info.document(doc_name).get().to_dict()
+            
+            thumbnail_image = base64.b64encode(self.bucket.blob(info['thumbnail_image']).download_as_bytes()).decode('utf-8')
+            product_list.append({
+                'title': info['title'],
+                'price': info['discount_price'],
+                'thumbnail': thumbnail_image
+            })
+        print(product_list)
+        return Response(product_list)
 
+    
     
     
     

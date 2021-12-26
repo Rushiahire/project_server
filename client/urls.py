@@ -4,7 +4,7 @@ from .import views
 
 
 urlpatterns=[
-    path('',views.Homepage.as_view(),name='homepage')
+    path('fetch',views.FetchProduct.as_view(),name='fetch')
 ]
 
 
