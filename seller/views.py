@@ -12,7 +12,7 @@ import base64
 
 class NewProduct(APIView):
     def __init__(self):
-        self.bucket = storage.bucket('shopheaven-ccc82.appspot.com')
+        self.bucket = storage.bucket('ecommerce-c7837.appspot.com')
         self.db = firestore.client()
         self.product_info = self.db.collection('product_info')
         
