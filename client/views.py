@@ -19,6 +19,7 @@ class FetchProduct(APIView):
             
             thumbnail_image = base64.b64encode(self.bucket.blob(info['thumbnail_image']).download_as_bytes()).decode('utf-8')
             product_list.append({
+                'id':info['id'],
                 'title': info['title'],
                 'price': info['discount_price'],
                 'thumbnail': thumbnail_image
