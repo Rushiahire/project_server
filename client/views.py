@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from firebase_admin import storage,firestore
 import base64
+import datetime
 
 class FetchProduct(APIView):
     def __init__(self):
@@ -16,8 +17,8 @@ class FetchProduct(APIView):
         
         for doc_name in self.doc_id:
             info = self.product_info.document(doc_name).get().to_dict()
-            
-            thumbnail_image = base64.b64encode(self.bucket.blob(info['thumbnail_image']).download_as_bytes()).decode('utf-8')
+            thumbnail_blob = self.bucket.blob(info['thumbnail_image'])
+            thumbnail_image = thumbnail_blob.generate_signed_url(datetime.timedelta(seconds=300), method='GET')
             product_list.append({
                 'id': info['id'],
                 'title': info['title'],
@@ -32,7 +33,7 @@ class FetchProduct(APIView):
 class ProductDetails(FetchProduct):
     def get(self,request,key):
         info = self.product_info.document(key).get().to_dict()
-        print(info)
+        # print(info)
         data = {
             'title': info['title'],
             'description' : info['description'],
@@ -43,7 +44,10 @@ class ProductDetails(FetchProduct):
         }
         
         for image_path in info['images']:
-            product_image = base64.b64encode(self.bucket.blob(image_path).download_as_bytes()).decode('utf-8')
+            # product_image = base64.b64encode(self.bucket.blob(image_path).download_as_bytes()).decode('utf-8')
+            blob = self.bucket.blob(image_path)
+            product_image = blob.generate_signed_url(datetime.timedelta(seconds=300), method='GET')
+            # print(product_image)
             data['images'].append(product_image)
         return Response(data)
     
