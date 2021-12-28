@@ -4,7 +4,7 @@ from firebase_admin import storage,firestore
 import random
 import string
 import base64
-
+import datetime
 # shopheaven-ccc82.appspot.com
 # ecommerce-c7837.appspot.com
 
@@ -79,12 +79,46 @@ class NewProduct(APIView):
         return Response("done dana done")
     
     
-    
-# string = "1,2,3,4,5,6"
-# new_string = string.replace(',','-')
-# 1-2-3-4-5-6
-
-
-    
-            
+class SellerPanel(APIView):
+    def __init__(self):
+        self.db = firestore.client()
+        self.product_info = self.db.collection('product_info')
+        self.bucket = storage.bucket('shopheaven-ccc82.appspot.com')
         
+
+    def get(self,request):
+        # doc_list = self.db.collection('product_info').stream()
+        # thumbnail , price , title , quantity 
+        # print(type(doc_list))
+        data_list = list()
+        for doc_name in self.db.collection('product_info').stream():
+            doc = self.product_info.document(doc_name.id).get().to_dict()
+            thumbnail_blob = self.bucket.blob(doc['thumbnail_image'])
+            thumbnail_image = thumbnail_blob.generate_signed_url(datetime.timedelta(seconds=300), method='GET')
+            data = {
+                'thumbnail' : thumbnail_image,
+                'price' : doc['price'],
+                'title' : doc['title'],
+                'quantity' : doc['quantity'],
+                'key': doc_name.id
+            }
+            data_list.append(data)
+            
+        return Response(data_list)
+    
+    
+class DeleteProduct(SellerPanel):
+    def post(self,request):
+        doc_name = request.data['id']
+        
+        current_doc = self.product_info.document(doc_name)
+        temp = current_doc.get().to_dict()
+        thumbnail_blob = self.bucket.blob(temp['thumbnail_image'])
+        thumbnail_blob.delete()
+        for image_path in temp['images']:
+            image_blob = self.bucket.blob(image_path)
+            image_blob.delete()
+        
+        current_doc.delete()
+    
+        return Response("Product Deleted Successfully")
