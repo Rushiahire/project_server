@@ -5,7 +5,8 @@ from .import views
 
 urlpatterns=[
     path('fetch',views.FetchProduct.as_view(),name='fetch'),
-    path('detail/<str:key>',views.ProductDetails.as_view(),name='product details')
+    path('detail/<str:key>',views.ProductDetails.as_view(),name='product details'),
+    path('review',views.AddReview.as_view(),name='add_review')
 ]
 
 

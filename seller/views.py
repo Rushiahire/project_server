@@ -32,6 +32,8 @@ class NewProduct(APIView):
         
         new_document = self.product_info.document(document_name)
         new_data = dict()
+        
+        new_data['reviews']=[]
                 
         for index in key_list[0:5]:
             new_data[index] = request.data[index]
