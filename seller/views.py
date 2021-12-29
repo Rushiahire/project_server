@@ -126,29 +126,42 @@ class UpdateProduct(SellerPanel):
         doc_id = request.data['id']
         # print(request.data.keys())
         
-        doc = self.product_info.document(doc_id).get().to_dict()
-        update_data={
-            'title':request.data['title'] if request.data['title'] !='' else doc['title'],
-            'description':request.data['description'] if request.data['description'] !='' else doc['description'],
-            'price':request.data['price'] if request.data['price'] !='' else doc['price'],
-            'discount_price':request.data['discount_price'] if request.data['discount_price'] !='' else doc['discount_price'],
-            'quantity':request.data['quantity'] if request.data['quantity'] !='' else doc['quantity']
-            }
+        doc = self.product_info.document(doc_id)
+        doc_data=doc.get().to_dict()
+        # update_data={
+        #     'title':request.data['title'] if request.data['title'] !='' else doc['title'],
+        #     'description':request.data['description'] if request.data['description'] !='' else doc['description'],
+        #     'price':request.data['price'] if request.data['price'] !='' else doc['price'],
+        #     'discount_price':request.data['discount_price'] if request.data['discount_price'] !='' else doc['discount_price'],
+        #     'quantity':request.data['quantity'] if request.data['quantity'] !='' else doc['quantity']
+        #     }
 
-        if 'null' not in  request.data['thumbnail']:
-            thumbnail_blob = self.bucket.blob(doc['thumbnail_image'])
-            thumbnail_blob.delete()
-            thumbnail_image = request.data['thumbnail']     
-            image_content_type = thumbnail_image.content_type  # image/jpeg ['image','jpeg']  
-            temp,extension = image_content_type.split('/')
-            thumbnail_path = f'{doc_id}/furniture/thumbnail.{extension}' 
-            thumbnail = self.bucket.blob(thumbnail_path)
-            thumbnail.upload_from_string(thumbnail_image.read(),content_type = image_content_type)
+
+        
+
+        # if 'null' not in  request.data['thumbnail']:
+        #     thumbnail_blob = self.bucket.blob(doc['thumbnail_image'])
+        #     thumbnail_blob.delete()
+        #     thumbnail_image = request.data['thumbnail']     
+        #     image_content_type = thumbnail_image.content_type  # image/jpeg ['image','jpeg']  
+        #     temp,extension = image_content_type.split('/')
+        #     thumbnail_path = f'{doc_id}/furniture/thumbnail.{extension}' 
+        #     thumbnail = self.bucket.blob(thumbnail_path)
+        #     thumbnail.upload_from_string(thumbnail_image.read(),content_type = image_content_type)
             
-            update_data['thumbnail_image']=thumbnail_path
+        #     update_data['thumbnail_image']=thumbnail_path
 
-        if 'image' in request.data.keys():
-            print(request.data.keys())
+        # if 'image' in request.data.keys():
+        #     print(request.data.keys())
         # print(update_data)
+
+        doc.update({
+            'title':request.data['title'] if request.data['title'] !='' else doc_data['title'],
+            'description':request.data['description'] if request.data['description'] !='' else doc_data['description'],
+            'price':request.data['price'] if request.data['price'] !='' else doc_data['price'],
+            'discount_price':request.data['discount_price'] if request.data['discount_price'] !='' else doc_data['discount_price'],
+            'quantity':request.data['quantity'] if request.data['quantity'] !='' else doc_data['quantity']
+        })
         
         return Response("updated")
+
