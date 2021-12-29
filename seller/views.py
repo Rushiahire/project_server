@@ -117,3 +117,16 @@ class DeleteProduct(SellerPanel):
         current_doc.delete()
     
         return Response("Product Deleted Successfully")
+    
+    
+    
+class UpdateProduct(SellerPanel):
+    def post(self,request):
+        # print(request.data)
+        doc_id = request.data['id']
+        print(request.data.keys())
+        
+        doc = self.product_info.document(doc_id).get().to_dict()
+        
+        
+        return Response("updated")
