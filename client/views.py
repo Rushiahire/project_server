@@ -2,12 +2,12 @@ from django.http import response
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from firebase_admin import storage,firestore
-import base64
 import datetime
+from links import STORAGE_BUCKET_URL
 
 class FetchProduct(APIView):
     def __init__(self):
-        self.bucket = storage.bucket('shopheaven-ccc82.appspot.com')
+        self.bucket = storage.bucket(STORAGE_BUCKET_URL)
         self.db = firestore.client()
         self.product_info = self.db.collection('product_info')
         self.doc_id = [doc.id for doc in self.product_info.stream()]
