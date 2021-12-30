@@ -54,21 +54,21 @@ class ProductDetails(FetchProduct):
     
 class AddReview(FetchProduct):
     def post(self,request):
-        # print(request.data)
-        # product_id = request.data['id']
-        # doc = self.product_info.document('product_id')
+        print(request.data)
+        product_id = request.data['id']
+        doc = self.product_info.document(product_id)
         
-        # doc_data = doc.get().to_dict()
-        # review_list = doc_data['reviews']
-        # new_review = {
-        #     'title':'title',
-        #     'description':'description',
-        #     'rating':'rating'
-        # }
-        # review_list.append(new_review)
+        doc_data = doc.get().to_dict()
+        review_list = doc_data['reviews']
+        new_review = {
+            'title':request.data['title'],
+            'description':request.data['description'],
+            'rating':int(request.data['rating'])
+        }
+        review_list.append(new_review)
         
-        # doc.update({
-        #     'reviews': review_list
-        # })
+        doc.update({
+            'reviews': review_list
+        })
         
         return Response("Review added successfully")
