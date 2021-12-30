@@ -54,7 +54,7 @@ class ProductDetails(FetchProduct):
     
 class AddReview(FetchProduct):
     def post(self,request):
-        print(request.data)
+        # print(request.data)
         product_id = request.data['id']
         doc = self.product_info.document(product_id)
         
@@ -72,3 +72,9 @@ class AddReview(FetchProduct):
         })
         
         return Response("Review added successfully")
+    
+    
+class FetchReview(FetchProduct):
+    def get(self,request,key):
+        doc = self.product_info.document(key).get().to_dict()
+        return Response(doc['reviews'])
