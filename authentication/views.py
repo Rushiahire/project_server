@@ -5,3 +5,4 @@ from keys import firebaseConfig
 class GetKeys(APIView):
     def get(self,request):
         return Response(firebaseConfig)
+
