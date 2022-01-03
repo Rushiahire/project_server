@@ -4,6 +4,9 @@ from rest_framework.views import APIView
 from keys import firebaseConfig
 import requests
 from keys import API_KEY
+from firebase_admin import auth
+import json
+
 
 class GetKeys(APIView):
     def get(self,request):
@@ -12,21 +15,13 @@ class GetKeys(APIView):
 
 class User(APIView):
     def post(self,request):
-        # print(request.data['userData']['credential']['idToken'])
+        # print(request.data)
         
-        url = f"https://identitytoolkit.googleapis.com/v1/accounts:lookup"
-        payload = {
-            # 'key' : request.data['userData']['credential']['idToken']
-            "key": f"{API_KEY}={request.data['userData']['credential']['idToken']}"
-
-        }
-        headers = {
-            'Content-Type' : 'application/x-www-form-urlencoded'
-            
-        }        
-        response = requests.post(url,headers=headers , data=payload )
+        info = auth.verify_id_token(request.data['idToken'])
         
-        print(response.text)
+        print(info)
+        
+        # print(response.text)
         
         
         return Response('user add')
