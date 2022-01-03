@@ -14,43 +14,37 @@ class User(APIView):
         self.db = firestore.client() 
         self.user_data = self.db.collection('user_data')
         
-        
-        
-    # UserId
-    # Name
-    # Email 
-    # Email varified ?
-    # phone number
-    # phone number
-    # phone number varified ?
-    # addresses = []
-    # cart = []
-    # purchase history = []
-    # id_seller ? (false by default)
-    # seller_id = null/None (by Default)
     
-    def addNewUser(self,user_data):
+    def addNewUser(self,uid,user_data):
         new_user = {
-            'user_id' : '',
-            'name' : '',
-            'email' : '',
-            'email_verified': False ,
-            'phone_number' : '',
+            'user_id' : uid,
+            'name' : user_data['user']["displayName"],
+            'email' :user_data['user']['email'],
+            'avatar': user_data['user']["photoURL"],
+            'email_verified': user_data['user']["emailVerified"],
+            'phone_number' : None,
             'phone_number_verified' : False ,
-            'addresses' : '',
-            'cart' : '',
-            'purchase_history' : '',
-            'id_seller' : False ,
-            'seller_id' : ''
+            'addresses' : [],
+            'cart' : [],
+            'purchase_history' : [],
+            'is_seller' : False ,
+            'seller_id' : None
         }
         
-        new_document = self.user_data.document('user_id')
+        new_document = self.user_data.document(uid)
         new_document.set(new_user)
         
     def post(self,request):
-        # print(request.data)
         info = auth.verify_id_token(request.data['idToken'])
-        print(auth.list_users())    
-        # print(response.text)
+        isNew = request.data['userData']["additionalUserInfo"]["isNewUser"]
+        
+        uid = info['uid']
+        
+        if isNew :
+            self.addNewUser(uid=uid,user_data=request.data['userData'])
+        else:
+            print("user already exists")
+             
+        
         return Response('user add')
 
