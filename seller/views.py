@@ -126,7 +126,6 @@ class UpdateProduct(SellerPanel):
     def post(self,request):
         print(request.data['thumbnail'])
         doc_id = request.data['id']
-        # print(request.data.keys())
         
         doc = self.product_info.document(doc_id)
         doc_data=doc.get().to_dict()
