@@ -44,7 +44,6 @@ class User(APIView):
             self.addNewUser(uid=uid,user_data=request.data['userData'])
         else:
             print("user already exists")
-             
         
         return Response('user add')
 
