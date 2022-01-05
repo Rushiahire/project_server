@@ -9,7 +9,7 @@ class GetKeys(APIView):
         return Response(firebaseConfig)
 
 
-class User(APIView):
+class EmailUser(APIView):
     def __init__(self):
         self.db = firestore.client() 
         self.user_data = self.db.collection('user_data')
@@ -47,3 +47,8 @@ class User(APIView):
         
         return Response('user add')
 
+
+class PhoneNumberUser(EmailUser):
+    def post(self,request):
+        print(request.data)
+        return Response('phone number user')

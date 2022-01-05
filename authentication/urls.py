@@ -1,8 +1,9 @@
 from django.urls import path
-from .views import GetKeys,User
+from .views import GetKeys,EmailUser,PhoneNumberUser
 
 
 urlpatterns = [
     path('keys',GetKeys.as_view(),name="GetKeys"),
-    path('user',User.as_view(),name='user')
+    path('email',EmailUser.as_view(),name='email user'),
+    path('phone',PhoneNumberUser.as_view(),name='phone user')
 ]
