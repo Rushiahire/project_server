@@ -46,6 +46,12 @@ class EmailUser(APIView):
         #     print(True)
         print(isNew)
         return Response(isNew)
+    
+    
+class UpdateEmailUser(EmailUser):
+    def post(self,request):
+        print(request.data.keys())
+        return Response("hahahaha")
 
 
 class PhoneNumberUser(EmailUser):
