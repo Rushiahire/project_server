@@ -42,13 +42,13 @@ class EmailUser(APIView):
         
         if isNew :
             self.addNewUser(uid=uid,user_data=request.data['userData'])
-        else:
-            print("user already exists")
-        
-        return Response('user add')
+        # else:
+        #     print(True)
+        print(isNew)
+        return Response(isNew)
 
 
 class PhoneNumberUser(EmailUser):
     def post(self,request):
-        print(request.data)
+        print(request.data['userData'][ "_tokenResponse"]['isNewUser'])
         return Response('phone number user')
