@@ -32,7 +32,7 @@ class User():
         
     def fetch_info_by_id(self):
         user_data_document = self.user_data.document(self.uid).get().to_dict()
-        return user_data
+        return user_data_document
     
     def delete_by_id(self):
         self.user_data.document(self.uid).delete()
@@ -67,7 +67,17 @@ class PhoneUser(APIView):
             
         return Response(False)
         
-            
+
+class  UserInfo(APIView):
+    def post(self,request):
+        print(request.data)
+        # info = auth.verify_id_token(request.data['idToken'])
+        # uid = info['uid']
+        # user = User(uid=uid)
+        # return Response(user.fetch_info_by_id())
+        return Response('added')
+     
+                   
 
 # class EmailUser(APIView):
 #     def __init__(self):

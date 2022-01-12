@@ -30,4 +30,3 @@ class UpdateProduct(APIView):
         current_product = Product()
         current_product.update_product(request_data=request)
         return Response("updated")
-
