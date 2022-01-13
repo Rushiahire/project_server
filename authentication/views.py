@@ -70,11 +70,12 @@ class PhoneUser(APIView):
 
 class  UserInfo(APIView):
     def post(self,request):
-        print(request.data)
-        uid=request.data['uid']
-        
+        # print(request.data)
+        info = auth.verify_id_token(request.data['idToken'])
+        uid=info['uid']
         user = User(uid=uid)
-        return Response(user.fetch_info_by_id())
+        data = user.fetch_info_by_id()
+        return Response(data)
       
      
                    

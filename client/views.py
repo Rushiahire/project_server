@@ -26,7 +26,6 @@ class AddReview(APIView):
     product_info = db.collection('product_info')
         
     def post(self,request):
-        # print(request.data)
         product_id = request.data['id']
         doc = self.product_info.document(product_id)
         
