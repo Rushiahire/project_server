@@ -50,12 +50,17 @@ class User():
         user_info.update({
                 'addresses':user_doc['addresses']
         })
+        
+        
+    def update_cart(self,product_info):
+        pass
             
         
         
 class EmailUser(APIView):
     def post(self,request):
         info = auth.verify_id_token(request.data['idToken'])
+        print(info)
         isNew = request.data['userData']["additionalUserInfo"]["isNewUser"]
         uid = info['uid']
         
