@@ -38,6 +38,19 @@ class User():
         self.user_data.document(self.uid).delete()
         return "deleted"
     
+    def update_address_id(self,value,add,index=-1):
+        user_info = self.user_data.document(self.uid)
+        user_doc = user_info.get().to_dict()
+        
+        if add:
+            user_doc['addresses'].append(value)
+        else:
+            del(user_doc['addresses'][index])
+        
+        user_info.update({
+                'addresses':user_doc['addresses']
+        })
+            
         
         
 class EmailUser(APIView):
@@ -76,6 +89,20 @@ class  UserInfo(APIView):
         user = User(uid=uid)
         data = user.fetch_info_by_id()
         return Response(data)
+    
+    
+class UpdateAddressInfo(APIView):
+    def post(self,request):
+        # print(request.data)
+        info = auth.verify_id_token(request.data['idToken'])
+        uid=info['uid']
+        user = User(uid = uid)
+        user.update_address_id(
+            value=request.data['address'],
+            add=request.data['add'],
+            index= request.data['index'] if request.data['index'] != '' else request.data['index']
+        )
+        return Response("Updated")
       
      
                    
