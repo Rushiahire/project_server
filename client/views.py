@@ -1,13 +1,14 @@
 from django.http import response
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from firebase_admin import storage,firestore
+from firebase_admin import storage,firestore,auth
 import datetime
 from links import STORAGE_BUCKET_URL
 from seller.product import Product
+from authentication.user import User
+
 
 class FetchProduct(APIView):
-    
     def get(self,request):
         product_info = Product()
         product_list = product_info.get_product_list()
@@ -17,7 +18,7 @@ class FetchProduct(APIView):
 class ProductDetails(APIView):
     def get(self,request,key):
         info = Product()
-        data = info.get_info_by_id(key=key)
+        data = info.get_info_by_id(key=key,is_history=True)
         return Response(data)
     
     
@@ -49,3 +50,29 @@ class FetchReview(AddReview):
     def get(self,request,key):
         doc = self.product_info.document(key).get().to_dict()
         return Response(doc['reviews'])
+    
+    
+class UpdateCart(APIView):
+    def post(self,request):
+        info = auth.verify_id_token(request.data['idToken'])
+        uid = info['uid']
+        user = User(uid = uid)
+        product_info = {
+            "product_id" : request.data['product_id'] ,
+            "quantity" : request.data['quantity']
+        }
+        user.update_cart(
+            product_info=product_info,
+            add=request.data['add'],
+            index=request.data['index']
+        )
+        print(info['uid'])
+        return Response("done dona done")
+    
+class FetchCart(APIView):
+    def post(self,request):
+        info = auth.verify_id_token(request.data['idToken'])
+        uid = info['uid']
+        user = User(uid=uid)
+        cart = user.get_cart_by_id()
+        return Response(cart)

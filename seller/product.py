@@ -122,7 +122,7 @@ class Product:
         current_doc.delete()
         
         
-    def get_info_by_id(self,key):
+    def get_info_by_id(self,key,is_history):
         info = self.product_info.document(key).get().to_dict()
         # print(info)
         data = {
@@ -131,14 +131,20 @@ class Product:
             'price':info['price'],
             'discount_price': info['discount_price'],
             'quantity': info['quantity'],
-            'images':[]
+            
         }
         
-        for image_path in info['images']:
-            # product_image = base64.b64encode(self.bucket.blob(image_path).download_as_bytes()).decode('utf-8')
-            blob = self.bucket.blob(image_path)
-            product_image = blob.generate_signed_url(datetime.timedelta(seconds=300), method='GET')
-            # print(product_image)
-            data['images'].append(product_image)
+        if is_history:
+            data['images']=[]
+            for image_path in info['images']:
+                # product_image = base64.b64encode(self.bucket.blob(image_path).download_as_bytes()).decode('utf-8')
+                blob = self.bucket.blob(image_path)
+                product_image = blob.generate_signed_url(datetime.timedelta(seconds=300), method='GET')
+                # print(product_image)
+                data['images'].append(product_image)
+        else:
+            blob = self.bucket.blob(info['thumbnail_image'])
+            thumbnail_image = blob.generate_signed_url(datetime.timedelta(seconds=300), method='GET')
+            data['thumbnail'] = thumbnail_image
             
         return data
