@@ -44,14 +44,17 @@ class User():
         })
         
         
-    def update_cart(self,product_info,add,index=-1):
+    def update_cart(self,product_info,add,index=-1,is_qty=False):
         user_info = self.user_data.document(self.uid)
         user_doc = user_info.get().to_dict()
         print(user_doc)
-        if add :
+        if add:
             user_doc['cart'].append(product_info)
         else:
-            del(user_doc['cart'][index])
+            if is_qty:
+                user_doc['cart'][index]['quantity'] = product_info["quantity"]
+            else:
+                del(user_doc['cart'][index])
             
         user_info.update({
                 'cart':user_doc['cart']

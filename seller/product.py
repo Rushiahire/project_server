@@ -124,23 +124,19 @@ class Product:
         
     def get_info_by_id(self,key,is_history):
         info = self.product_info.document(key).get().to_dict()
-        # print(info)
         data = {
             'title': info['title'],
             'description' : info['description'],
             'price':info['price'],
             'discount_price': info['discount_price'],
-            'quantity': info['quantity'],
-            
+            'quantity': info['quantity']
         }
         
         if is_history:
             data['images']=[]
             for image_path in info['images']:
-                # product_image = base64.b64encode(self.bucket.blob(image_path).download_as_bytes()).decode('utf-8')
                 blob = self.bucket.blob(image_path)
                 product_image = blob.generate_signed_url(datetime.timedelta(seconds=300), method='GET')
-                # print(product_image)
                 data['images'].append(product_image)
         else:
             blob = self.bucket.blob(info['thumbnail_image'])

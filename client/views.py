@@ -62,9 +62,10 @@ class UpdateCart(APIView):
             "quantity" : request.data['quantity']
         }
         user.update_cart(
-            product_info=product_info,
-            add=request.data['add'],
-            index=request.data['index']
+            product_info = product_info,
+            add = request.data['add'],
+            index = request.data['index'],
+            is_qty = request.data['is_qty']
         )
         print(info['uid'])
         return Response("done dona done")
