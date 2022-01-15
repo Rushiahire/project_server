@@ -18,7 +18,8 @@ class User():
             "cart" : list(),
             "purchase_history" : list(),
             "is_seller" : False,
-            "seller_id" : None
+            "seller_id" : None,
+            "total" : 0
         }
         new_document.set(new_data)
         
@@ -47,17 +48,35 @@ class User():
     def update_cart(self,product_info,add,index=-1,is_qty=False):
         user_info = self.user_data.document(self.uid)
         user_doc = user_info.get().to_dict()
-        print(user_doc)
+
         if add:
-            user_doc['cart'].append(product_info)
+            
+            if product_info['product_id'] in [product['product_id'] for product in user_doc['cart']]:
+                for index in range(len(user_doc['cart'])):
+                    if user_doc['cart'][index]['product_id'] == product_info['product_id']:
+                        user_doc['total']+=eval(product_info['price'])*user_doc['cart'][index]['quantity']
+                        user_doc['cart'][index]['quantity']+=1
+                        break
+            else:    
+                user_doc['total']+=eval(product_info['price'])*float(product_info["quantity"])
+                user_doc['cart'].append(product_info)
+        elif is_qty:
+            qty = int(user_doc['cart'][index]['quantity'])
+            new_qty = int(product_info["quantity"])
+            price = float(product_info["price"])
+            print(price)
+            user_doc['total'] = user_doc['total'] -  qty * price
+            user_doc['total'] = user_doc['total'] + new_qty * price
+            user_doc['cart'][index]['quantity'] = new_qty
         else:
-            if is_qty:
-                user_doc['cart'][index]['quantity'] = product_info["quantity"]
-            else:
-                del(user_doc['cart'][index])
+            qty = int(user_doc['cart'][index]['quantity'])
+            price = float(product_info["price"])
+            user_doc['total'] -= qty * price
+            del(user_doc['cart'][index])
             
         user_info.update({
-                'cart':user_doc['cart']
+                'cart':user_doc['cart'],
+                'total':user_doc['total']
         })
         
     def get_cart_by_id(self):
@@ -72,4 +91,8 @@ class User():
             cart_info.append(info)
             
         return cart_info
+        
+        
+
+        
         
