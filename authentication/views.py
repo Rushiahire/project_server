@@ -38,6 +38,7 @@ class  UserInfo(APIView):
     def post(self,request):
         info = auth.verify_id_token(request.data['idToken'])
         uid=info['uid']
+        
         user = User(uid=uid)
         data = user.fetch_info_by_id()
         return Response(data)

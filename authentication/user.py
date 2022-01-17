@@ -70,8 +70,9 @@ class User():
             user_doc['cart'][index]['quantity'] = new_qty
         else:
             qty = int(user_doc['cart'][index]['quantity'])
-            price = float(product_info["price"])
-            user_doc['total'] -= qty * price
+            price = float(user_doc["cart"][index]["price"])
+            amount = qty * price
+            user_doc['total'] = user_doc['total'] - amount
             del(user_doc['cart'][index])
             
         user_info.update({
@@ -91,7 +92,18 @@ class User():
             cart_info.append(info)
             
         return cart_info
-        
+    
+    
+    def get_total_by_id(self):
+        user_info = self.user_data.document(self.uid)
+        user_doc = user_info.get().to_dict()
+        delivery_charges = 50
+        data = {
+            'charges':delivery_charges,
+            'subTotal':user_doc['total'],
+            'total':user_doc['total']+delivery_charges
+        }
+        return data
         
 
         

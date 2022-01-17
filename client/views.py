@@ -77,3 +77,12 @@ class FetchCart(APIView):
         user = User(uid=uid)
         cart = user.get_cart_by_id()
         return Response(cart)
+    
+    
+class CartBill(APIView):
+    def post(self,request):
+        info = auth.verify_id_token(request.data['idToken'])
+        uid = info['uid']
+        user = User(uid=uid)
+        data = user.get_total_by_id()
+        return Response(data)
