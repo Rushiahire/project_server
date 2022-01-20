@@ -33,7 +33,7 @@ class Product:
         new_data['reviews']=[]
                 
         for index in key_list[0:5]:
-            new_data[index] = request.data[index]
+            new_data[index] = request_data.data[index]
             
         # print(new_data)
         
@@ -42,7 +42,7 @@ class Product:
         seller_id = new_data['id']
         category = 'furniture'
     
-        thumbnail_image = request.data['thumbnail']     
+        thumbnail_image = request_data.data['thumbnail']     
         image_content_type = thumbnail_image.content_type  # image/jpeg ['image','jpeg']  
         temp,extension = image_content_type.split('/')
         thumbnail_path = f'{seller_id}/{category}/thumbnail.{extension}' 
@@ -54,7 +54,7 @@ class Product:
         new_data['images'] = list()
         
         for key_name in key_list[6:]:
-            image_data = request.data[key_name]
+            image_data = request_data.data[key_name]
             print(image_data)
             image_content_type = image_data.content_type
             temp,extension = image_content_type.split('/')
