@@ -12,7 +12,11 @@ class GetKeys(APIView):
     
 class EmailUser(APIView):
     def post(self,request):
-        info = auth.verify_id_token(request.data['idToken'])
+        try:
+            info = auth.verify_id_token(request.data['idToken'])
+        except:
+            return Response(None)
+        
         isNew = request.data['userData']["additionalUserInfo"]["isNewUser"]
         uid = info['uid']
         if isNew:
@@ -24,7 +28,11 @@ class EmailUser(APIView):
     
 class PhoneUser(APIView):
     def post(self,request):
-        info = auth.verify_id_token(request.data['idToken'])
+        try:
+            info = auth.verify_id_token(request.data['idToken'])
+        except:
+            return None
+        
         isNew = request.data['userData'][ "_tokenResponse"]['isNewUser']
         uid = info['uid']
         if isNew:
@@ -36,7 +44,11 @@ class PhoneUser(APIView):
 
 class  UserInfo(APIView):
     def post(self,request):
-        info = auth.verify_id_token(request.data['idToken'])
+        try:
+            info = auth.verify_id_token(request.data['idToken'])
+        except:
+            return Response(None)
+        
         uid=info['uid'] 
         user = User(uid=uid)
         data = user.fetch_info_by_id()
@@ -45,7 +57,11 @@ class  UserInfo(APIView):
     
 class UpdateAddressInfo(APIView):
     def post(self,request):
-        info = auth.verify_id_token(request.data['idToken'])
+        try:
+            info = auth.verify_id_token(request.data['idToken'])
+        except:
+            return Response(False)
+        
         uid=info['uid']
         user = User(uid = uid)
         user.update_address_id(
@@ -53,7 +69,8 @@ class UpdateAddressInfo(APIView):
             add=request.data['add'],
             index= request.data['index'] if request.data['index'] != '' else request.data['index']
         )
-        return Response("Updated")
+        
+        return Response(True)
       
      
                    

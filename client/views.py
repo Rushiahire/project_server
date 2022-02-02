@@ -54,7 +54,11 @@ class FetchReview(AddReview):
     
 class UpdateCart(APIView):
     def post(self,request):
-        info = auth.verify_id_token(request.data['idToken'])
+        try:
+            info = auth.verify_id_token(request.data['idToken'])
+        except:
+            return Response(False)
+        
         uid = info['uid']
         user = User(uid = uid)
         product_info = {
@@ -72,7 +76,11 @@ class UpdateCart(APIView):
     
 class FetchCart(APIView):
     def post(self,request):
-        info = auth.verify_id_token(request.data['idToken'])
+        try:
+            info = auth.verify_id_token(request.data['idToken'])
+        except:
+            return Response(False)
+        
         uid = info['uid']
         user = User(uid=uid)
         cart = user.get_cart_by_id()
@@ -81,7 +89,11 @@ class FetchCart(APIView):
     
 class CartBill(APIView):
     def post(self,request):
-        info = auth.verify_id_token(request.data['idToken'])
+        try:
+            info = auth.verify_id_token(request.data['idToken'])
+        except:
+            return Response(None)
+
         uid = info['uid']
         user = User(uid=uid)
         data = user.get_total_by_id()
