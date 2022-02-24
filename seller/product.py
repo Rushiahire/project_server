@@ -38,14 +38,14 @@ class Product:
         # print(new_data)
         
         new_data['id']= document_name
-        
-        seller_id = new_data['id']
-        category = 'furniture'
+        # print(request_data.data)
+        # seller_id = new_data['id']
+        category = request_data.data["category"]
     
         thumbnail_image = request_data.data['thumbnail']     
         image_content_type = thumbnail_image.content_type  # image/jpeg ['image','jpeg']  
         temp,extension = image_content_type.split('/')
-        thumbnail_path = f'{seller_id}/{category}/thumbnail.{extension}' 
+        thumbnail_path = f'{document_name}/{category}/thumbnail.{extension}' 
         thumbnail = self.bucket.blob(thumbnail_path)
         thumbnail.upload_from_string(thumbnail_image.read(),content_type = image_content_type)
         
@@ -60,12 +60,12 @@ class Product:
             temp,extension = image_content_type.split('/')
             
             files_list = [ 
-                file.name.replace(f'{seller_id}/{category}/','') 
+                file.name.replace(f'{document_name}/{category}/','') 
                 for file in self.bucket.list_blobs() 
-                if f'{seller_id}/{category}' in file.name
+                if f'{document_name}/{category}' in file.name
             ]
             file_name = self.generate_name(files_list)
-            image_path = f'{seller_id}/{category}/{file_name}.{extension}'
+            image_path = f'{document_name}/{category}/{file_name}.{extension}'
             new_data['images'].append(image_path)
             new_image = self.bucket.blob(image_path)
             new_image.upload_from_string(image_data.read(),content_type = image_content_type)
