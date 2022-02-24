@@ -33,7 +33,7 @@ class Product:
         new_data['reviews']=[]
                 
         for index in key_list[0:5]:
-            new_data[index] = request_data.data[index]
+            new_data[index] = eval(request_data.data[index]) if request_data.data[index].isnumeric() else request_data.data[index]
             
         # print(new_data)
         
@@ -124,6 +124,7 @@ class Product:
         
     def get_info_by_id(self,key,is_history):
         info = self.product_info.document(key).get().to_dict()
+        # print(info)
         data = {
             'title': info['title'],
             'description' : info['description'],

@@ -17,7 +17,6 @@ class User():
             "addresses" : list(),
             "cart" : list(),
             "purchase_history" : list(),
-            "is_seller" : False,
             "seller_id" : None,
             "total" : 0
         }
@@ -54,11 +53,11 @@ class User():
             if product_info['product_id'] in [product['product_id'] for product in user_doc['cart']]:
                 for index in range(len(user_doc['cart'])):
                     if user_doc['cart'][index]['product_id'] == product_info['product_id']:
-                        user_doc['total']+=eval(product_info['price'])*user_doc['cart'][index]['quantity']
+                        user_doc['total']+=float(product_info['price'])*float(user_doc['cart'][index]['quantity'])
                         user_doc['cart'][index]['quantity']+=1
                         break
             else:    
-                user_doc['total']+=eval(product_info['price'])*float(product_info["quantity"])
+                user_doc['total']+=float(product_info['price'])*float(product_info["quantity"])
                 user_doc['cart'].append(product_info)
         elif is_qty:
             qty = int(user_doc['cart'][index]['quantity'])

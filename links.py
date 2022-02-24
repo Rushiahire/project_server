@@ -4,6 +4,7 @@ NETWORK_HOST = '192.168.0.104'
 # 192.168.43.253 Chinmay ka hotspot
 # 192.168.0.104 Chinmay ka wifi 
 # 192.168.0.110 krishna ka wifi
+# 192.168.0.238 college ka link
 
 STORAGE_BUCKET_URL = 'ecommerce-864e8.appspot.com' #Chinmay ka link
 # STORAGE_BUCKET_URL = 'shopheaven-ccc82.appspot.com' #Rushikesh ka link
