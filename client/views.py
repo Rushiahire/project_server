@@ -9,16 +9,16 @@ from authentication.user import User
 
 
 class FetchProduct(APIView):
-    def get(self,request):
+    def get(self,request,category):
         product_info = Product()
-        product_list = product_info.get_product_list()
+        product_list = product_info.get_product_list(category=category)
         return Response(product_list)
     
     
 class ProductDetails(APIView):
-    def get(self,request,key):
+    def get(self,request,category,key):
         info = Product()
-        data = info.get_info_by_id(key=key,is_history=True)
+        data = info.get_info_by_id(key=key,is_history=True,category=category)
         return Response(data)
     
     
@@ -47,8 +47,9 @@ class AddReview(APIView):
     
     
 class FetchReview(AddReview):
-    def get(self,request,key):
-        doc = self.product_info.document(key).get().to_dict()
+    def get(self,request,category,key):
+        product_info = self.db.collection(category)
+        doc = product_info.document(key).get().to_dict()
         return Response(doc['reviews'])
     
     

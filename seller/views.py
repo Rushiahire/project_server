@@ -18,9 +18,9 @@ class NewProduct(APIView):
     
 class SellerPanel(APIView):
         
-    def get(self,request):
+    def get(self,request,category):
         products = Product()
-        product_list = products.get_product_list()
+        product_list = products.get_product_list(category=category)
         return Response(product_list)
     
     
