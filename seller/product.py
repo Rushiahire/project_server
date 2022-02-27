@@ -130,6 +130,7 @@ class Product:
         info = product_info.document(key).get().to_dict()
 
         data = {
+            'category':category,
             'title': info['title'],
             'description' : info['description'],
             'price':info['price'],

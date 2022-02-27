@@ -27,12 +27,21 @@ class AddReview(APIView):
     product_info = db.collection('product_info')
         
     def post(self,request):
+        try:
+            info = auth.verify_id_token(request.data['idToken'])
+        except:
+            return Response(False)
+        
+        
+        # print(info["email"])
+        product_info = self.db.collection(request.data["category"])
         product_id = request.data['id']
-        doc = self.product_info.document(product_id)
+        doc = product_info.document(product_id)
         
         doc_data = doc.get().to_dict()
         review_list = doc_data['reviews']
         new_review = {
+            'user': info["email"],
             'title':request.data['title'],
             'description':request.data['description'],
             'rating':int(request.data['rating'])
@@ -62,18 +71,25 @@ class UpdateCart(APIView):
         
         uid = info['uid']
         user = User(uid = uid)
+        
         product_info = {
+           
             "product_id" : request.data['product_id'],
             "quantity" : request.data['quantity'],
             "price" : request.data["price"]
         }
+
+        if(request.data['add']):
+             product_info["category"] = request.data["category"]
+        
+        
         user.update_cart(
             product_info = product_info,
             add = request.data['add'],
             index = request.data['index'],
             is_qty = request.data['is_qty']
         )
-        return Response("done dona done")
+        return Response(True)
     
 class FetchCart(APIView):
     def post(self,request):

@@ -17,7 +17,6 @@ class User():
             "addresses" : list(),
             "cart" : list(),
             "purchase_history" : list(),
-            "seller_id" : None,
             "total" : 0
         }
         new_document.set(new_data)
@@ -85,7 +84,11 @@ class User():
         cart_info = list()
         product = Product()
         for prod_info in user_doc['cart']:
-            info = product.get_info_by_id(key=prod_info['product_id'],is_history=False)
+            info = product.get_info_by_id(
+                    category=prod_info["category"],
+                    key=prod_info['product_id'],
+                    is_history=False
+                )
             info['quantity'] = prod_info['quantity']
             info['key'] = prod_info['product_id']
             cart_info.append(info)

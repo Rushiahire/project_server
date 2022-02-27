@@ -14,3 +14,5 @@ STORAGE_BUCKET_URL = 'major-project-7ee6d.appspot.com' # Chinmay ka 2nd link
 # STORAGE_BUCKET_URL = 'major-project-a48e0.appspot.com' #krishna ka link
 
 
+#  https://stackoverflow.com/questions/61052413/google-cloud-storage-quota-hit-how
+
