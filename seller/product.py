@@ -22,6 +22,7 @@ class Product:
     
     
     def add_new_product(self,request_data):
+        del(request_data.data["idToken"])
         key_list = list(request_data.data.keys())
         # print(key_list)
         category = request_data.data["category"]
@@ -45,7 +46,7 @@ class Product:
         thumbnail_image = request_data.data['thumbnail']     
         image_content_type = thumbnail_image.content_type  # image/jpeg ['image','jpeg']  
         temp,extension = image_content_type.split('/')
-        thumbnail_path = f'{document_name}/thumbnail.{extension}' 
+        thumbnail_path = f'{category}/{document_name}/thumbnail.{extension}' 
         thumbnail = self.bucket.blob(thumbnail_path)
         thumbnail.upload_from_string(thumbnail_image.read(),content_type = image_content_type)
         
@@ -60,12 +61,12 @@ class Product:
             temp,extension = image_content_type.split('/')
             
             files_list = [ 
-                file.name.replace(f'{document_name}/','') 
+                file.name.replace(f'{category}/{document_name}/','') 
                 for file in self.bucket.list_blobs() 
-                if f'{document_name}' in file.name
+                if f'{category}/{document_name}' in file.name
             ]
             file_name = self.generate_name(files_list)
-            image_path = f'{document_name}/{file_name}.{extension}'
+            image_path = f'{category}/{document_name}/{file_name}.{extension}'
             new_data['images'].append(image_path)
             new_image = self.bucket.blob(image_path)
             new_image.upload_from_string(image_data.read(),content_type = image_content_type)

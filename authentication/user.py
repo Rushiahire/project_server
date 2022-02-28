@@ -17,6 +17,9 @@ class User():
             "addresses" : list(),
             "cart" : list(),
             "purchase_history" : list(),
+            "on_the_way":list(),
+            "delivered":list(),
+            "cancled":list(),
             "total" : 0
         }
         new_document.set(new_data)
@@ -48,8 +51,7 @@ class User():
         user_doc = user_info.get().to_dict()
 
         if add:
-            
-            if product_info['product_id'] in [product['product_id'] for product in user_doc['cart']]:
+            if len(user_doc['cart']) > 0 and product_info['product_id'] in [product['product_id'] for product in user_doc['cart']]:
                 for index in range(len(user_doc['cart'])):
                     if user_doc['cart'][index]['product_id'] == product_info['product_id']:
                         user_doc['total']+=float(product_info['price'])*float(user_doc['cart'][index]['quantity'])
