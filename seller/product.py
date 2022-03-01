@@ -49,8 +49,12 @@ class Product:
         thumbnail_path = f'{category}/{document_name}/thumbnail.{extension}' 
         thumbnail = self.bucket.blob(thumbnail_path)
         thumbnail.upload_from_string(thumbnail_image.read(),content_type = image_content_type)
-        
-        new_data['thumbnail_image'] = thumbnail_path
+        thumbnail.make_public()
+        thumbnail_url = thumbnail.public_url
+        new_data['thumbnail_image'] = {
+            "url":thumbnail_url,
+            "path":thumbnail_path
+        }
         
         new_data['images'] = list()
         
@@ -67,10 +71,15 @@ class Product:
             ]
             file_name = self.generate_name(files_list)
             image_path = f'{category}/{document_name}/{file_name}.{extension}'
-            new_data['images'].append(image_path)
             new_image = self.bucket.blob(image_path)
             new_image.upload_from_string(image_data.read(),content_type = image_content_type)
-        
+            new_image.make_public()
+            image_url = new_image.public_url
+            new_data['images'].append({
+                "url":image_url,
+                "path":image_path
+            })
+            
         new_document.set(new_data)
         return True
     
@@ -80,10 +89,10 @@ class Product:
         data_list = list()
         for doc_name in doc_list:
             doc = product_info.document(doc_name.id).get().to_dict()
-            thumbnail_blob = self.bucket.blob(doc['thumbnail_image'])
-            thumbnail_image = thumbnail_blob.generate_signed_url(datetime.timedelta(seconds=500), method='GET')
+            # thumbnail_blob = self.bucket.blob(doc['thumbnail_image'])
+            # thumbnail_image = thumbnail_blob.generate_signed_url(datetime.timedelta(seconds=500), method='GET')
             data = {
-                'thumbnail' : thumbnail_image,
+                'thumbnail' : doc['thumbnail_image']['url'],
                 'price' : doc['price'],
                 'title' : doc['title'],
                 'quantity' : doc['quantity'],
@@ -114,13 +123,12 @@ class Product:
     def delete_product(self,request_data):
         product_info = self.db.collection(request_data.data["category"])
         doc_name = request_data.data['id']
-        
         current_doc = product_info.document(doc_name)
         temp = current_doc.get().to_dict()
-        thumbnail_blob = self.bucket.blob(temp['thumbnail_image'])
+        thumbnail_blob = self.bucket.blob(temp['thumbnail_image']["path"])
         thumbnail_blob.delete()
         for image_path in temp['images']:
-            image_blob = self.bucket.blob(image_path)
+            image_blob = self.bucket.blob(image_path["path"])
             image_blob.delete()
         
         current_doc.delete()
@@ -142,12 +150,17 @@ class Product:
         if is_history:
             data['images']=[]
             for image_path in info['images']:
-                blob = self.bucket.blob(image_path)
-                product_image = blob.generate_signed_url(datetime.timedelta(seconds=300), method='GET')
-                data['images'].append(product_image)
+                # blob = self.bucket.blob(image_path)
+                # product_image = blob.generate_signed_url(datetime.timedelta(seconds=300), method='GET')
+                data['images'].append(image_path["url"])
         else:
-            blob = self.bucket.blob(info['thumbnail_image'])
-            thumbnail_image = blob.generate_signed_url(datetime.timedelta(seconds=300), method='GET')
-            data['thumbnail'] = thumbnail_image
+            # blob = self.bucket.blob()
+            # thumbnail_image = blob.generate_signed_url(datetime.timedelta(seconds=300), method='GET')
+            data['thumbnail'] = info['thumbnail_image']['url']
             
         return data
+    
+    
+    
+    
+# https://stackoverflow.com/questions/57760580/how-do-i-get-the-url-of-uploaded-file  how to make file public ?
