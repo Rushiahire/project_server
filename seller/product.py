@@ -88,7 +88,8 @@ class Product:
         doc_list = product_info.stream()
         data_list = list()
         for doc_name in doc_list:
-            doc = product_info.document(doc_name.id).get().to_dict()
+            # doc = product_info.document(doc_name.id).get().to_dict()
+            doc = doc_name.to_dict()
             # thumbnail_blob = self.bucket.blob(doc['thumbnail_image'])
             # thumbnail_image = thumbnail_blob.generate_signed_url(datetime.timedelta(seconds=500), method='GET')
             data = {

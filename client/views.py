@@ -2,16 +2,38 @@ from django.http import response
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from firebase_admin import storage,firestore,auth
-import datetime
-from links import STORAGE_BUCKET_URL
+# import datetime
+# from links import STORAGE_BUCKET_URL
 from seller.product import Product
 from authentication.user import User
+from products_common import laptops,iphone,camera,clock,watch
+import random
 
 
 class FetchProduct(APIView):
+    
+    def get_homepage_category(self,category):
+        if category == 'laptop':
+            array_length = 6 if len(laptops) >= 6 else len(laptops)
+            return random.sample(laptops,array_length)
+        if category == "camera":
+            array_length = 6 if len(camera) >= 6 else len(camera)
+            return random.sample(camera,array_length)
+        if category == "clock":
+            array_length = 6 if len(clock) >= 6 else len(clock)
+            return random.sample(clock,array_length)
+        if category == "watch":
+            array_length = 6 if len(watch) >= 6 else len(watch)
+            return random.sample(watch,array_length)
+        if category == "iphone":
+            array_length = 6 if len(iphone) >= 6 else len(iphone)
+            return random.sample(iphone,array_length)
+    
     def get(self,request,category):
-        product_info = Product()
-        product_list = product_info.get_product_list(category=category)
+        # print(laptops,camera,iphone,clock,watch)
+        # product_info = Product()
+        # product_list = product_info.get_product_list(category=category)
+        product_list = self.get_homepage_category(category=category)
         return Response(product_list)
     
     
