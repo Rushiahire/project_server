@@ -16,3 +16,4 @@ STORAGE_BUCKET_URL = 'major-project-96975.appspot.com' #Rushikesh ka link
 
 #  https://stackoverflow.com/questions/61052413/google-cloud-storage-quota-hit-how
 
+PAYMENT_REDIRECT_URL = "http://localhost:3000/viewcart/"
