@@ -20,5 +20,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('client/',include('client.urls')),
     path('seller/',include('seller.urls')),
-    path('auth/',include('authentication.urls'))
+    path('auth/',include('authentication.urls')),
+    path('payment/',include('payment.urls'))
 ]
