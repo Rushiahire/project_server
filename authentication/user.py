@@ -1,5 +1,6 @@
 from firebase_admin import firestore
 from seller.product import Product
+import datetime
 
 db = firestore.client()
 
@@ -20,6 +21,7 @@ class User():
             "on_the_way":list(),
             "delivered":list(),
             "cancled":list(),
+            "pending":list(),
             "total" : 0
         }
         new_document.set(new_data)
@@ -108,6 +110,34 @@ class User():
             'total':user_doc['total']+delivery_charges
         }
         return data
+    
+    def move_cart_to_pending(self,payment_id,payment_id_local,shipping_address):
+        user_info = self.user_data.document(self.uid)
+        user_doc = user_info.get().to_dict()
+        
+        total = float(user_doc["total"]) + 50
+        current_cart = user_doc["cart"]
+        current_shipping_address = user_doc["addresses"][shipping_address]
+        # print(total,current_cart,current_shipping_address)
+        
+        current_transaction = {
+            "total":total,
+            "products":current_cart,
+            "shipping_address":current_shipping_address,
+            "payment_id":payment_id,
+            "payment_id_local":payment_id_local,
+            "payment_date":datetime.datetime.now()
+        }
+        
+        if len(user_doc["cart"])  > 0:
+            user_doc["pending"].append(current_transaction)
+            user_info.update({
+                    'pending':user_doc['pending'],
+                    'total':0,
+                    'cart':list()
+            })
+        
+        
         
 
         
