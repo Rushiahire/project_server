@@ -7,6 +7,7 @@ db = firestore.client()
 class User():
     
     user_data = db.collection('user_data')
+    payment_data = db.collection('payment_data')
     
     def __init__(self,uid=''):
         self.uid = uid  
@@ -18,7 +19,7 @@ class User():
             "addresses" : list(),
             "cart" : list(),
             "purchase_history" : list(),
-            "on_the_way":list(),
+            "dispatched":list(),
             "delivered":list(),
             "cancled":list(),
             "pending":list(),
@@ -136,6 +137,15 @@ class User():
                     'total':0,
                     'cart':list()
             })
+            pending_data = self.payment_data.document("pending")
+            pending_doc = pending_data.get().to_dict()
+            pending_doc["users"].append(self.uid)
+            pending_data.update({
+                "users":pending_doc["users"]
+            })
+            
+            
+            
         
         
         

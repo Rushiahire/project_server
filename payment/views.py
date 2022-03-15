@@ -10,9 +10,9 @@ from authentication.user import User
 
 
 api = Instamojo(
-    api_key=API_KEY ,
-    auth_token=AUTH_TOKEN,
-    endpoint = 'https://test.instamojo.com/api/1.1/'
+        api_key=API_KEY ,
+        auth_token=AUTH_TOKEN,
+        endpoint = 'https://test.instamojo.com/api/1.1/'
     )
 
 
@@ -73,3 +73,5 @@ class PaymentSuccess(APIView):
         )
         
         return Response(True)
+    
+    
