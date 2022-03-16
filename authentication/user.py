@@ -121,25 +121,43 @@ class User():
         current_shipping_address = user_doc["addresses"][shipping_address]
         # print(total,current_cart,current_shipping_address)
         
+        print("length :",len(user_doc["pending"]))
+        
         current_transaction = {
             "total":total,
-            "products":current_cart,
+            "products":list(),
             "shipping_address":current_shipping_address,
             "payment_id":payment_id,
             "payment_id_local":payment_id_local,
-            "payment_date":datetime.datetime.now()
+            "payment_date":datetime.datetime.now().strftime("%d-%m-%Y")
         }
         
-        if len(user_doc["cart"])  > 0:
+        
+        if(len(user_doc["cart"])>0):
+            # user_doc["pending"].append(current_transaction)
+            
+            for product in user_doc['cart']:
+                    product_info = db.collection(product["category"]).document(product["product_id"]).get().to_dict()
+                    current_transaction["products"].append(product_info["title"])
+                    
+                   
+            current_transaction["uid"] = self.uid 
             user_doc["pending"].append(current_transaction)
+            current_index = user_doc["pending"].index(current_transaction)
+            user_doc["pending"][current_index]["index"] = current_index
+            
             user_info.update({
-                    'pending':user_doc['pending'],
-                    'total':0,
-                    'cart':list()
+                "total":0,
+                "cart":list(),
+                "pending":user_doc["pending"]
             })
+            
             pending_data = self.payment_data.document("pending")
             pending_doc = pending_data.get().to_dict()
-            pending_doc["users"].append(self.uid)
+            
+            
+            
+            pending_doc["users"].append(current_transaction)
             pending_data.update({
                 "users":pending_doc["users"]
             })
