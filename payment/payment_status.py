@@ -1,6 +1,7 @@
-from firebase_admin import firestore
+from firebase_admin import firestore,auth
 from seller.product import Product
 import datetime
+from email_service.send_email import send_dispatch_email,send_delivered_email
 
 db = firestore.client()
 user_data = db.collection('user_data')
@@ -98,6 +99,12 @@ def update_pending_to_dispatch(data,uid):
         "users":payment_info_dict["users"]
     })
     
+    user_email = auth.get_user(uid).email
+    send_dispatch_email(
+        info=current_transaction,
+        email=user_email
+    )
+    
     
 def update_dispatch_to_delivered(uid,data):
     
@@ -134,3 +141,10 @@ def update_dispatch_to_delivered(uid,data):
     delivered_info.update({
         "users": delivered_info_doc["users"]
     })
+    
+    user_email = auth.get_user(user_uid).email
+    
+    send_delivered_email(
+        info = current_transaction,
+        email = user_email
+    )
