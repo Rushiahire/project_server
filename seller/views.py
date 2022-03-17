@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from .product import Product
 from keys import adminFirebaseConfig
 from firebase_admin import auth,firestore
+from django.core.cache import cache
 
 from payment.payment_status import update_pending_to_dispatch,update_dispatch_to_delivered
 
@@ -26,8 +27,16 @@ class NewProduct(APIView):
     
 class SellerPanel(APIView):    
     def get(self,request,category):
-        products = Product()
-        product_list = products.get_product_list(category=category)
+        seller_category = f"seller{category}"
+        if cache.get(seller_category):
+            # print(f"seller {category} coming from cache")
+            product_list = cache.get(seller_category)
+        else:
+            # print(f"seller {category} coming from database")
+            products = Product()
+            product_list = products.get_product_list(category=category)
+            cache.set(seller_category,product_list)
+            
         return Response(product_list)
     
     
