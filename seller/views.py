@@ -5,6 +5,8 @@ from .product import Product
 from keys import adminFirebaseConfig
 from firebase_admin import auth,firestore
 
+from payment.payment_status import update_pending_to_dispatch,update_dispatch_to_delivered
+
 
 class SellerAuthKeys(APIView):
     def get(self,request):
@@ -70,7 +72,12 @@ class PaymentStatus(APIView):
         payment_dict = payment_info.get().to_dict()
         # print(payment_dict)            
         return payment_dict["users"]
-
+    
+    
+    def get_delivered_status(self):
+        payment_info = self.status_collection.document("delivered")
+        payment_dict = payment_info.get().to_dict()
+        return payment_dict["users"]
     
     def post(self,request,status):
         try:
@@ -85,16 +92,12 @@ class PaymentStatus(APIView):
         
         if status == "dispatched":
             dispatch_info = self.get_dispatch_status()
-            print(dispatch_info)
+            # print(dispatch_info)
             return Response(dispatch_info)
         
-        # if request.data["status"] == "delivered":
-        #     pass
-        
-        # payment_info = self.status_collection.document(status)
-        # payment_dict = payment_info.get().to_dict()
-        
-        # shipping_data = list()
+        if status == "delivered":
+            dekivered_info = self.get_delivered_status()
+            return Response(dekivered_info)
         
         return Response(None)
     
@@ -108,41 +111,26 @@ class UpdateToDispatch(PaymentStatus):
             return Response(False)   
         
         user_uid = request.data["user_info"]["uid"]
+        update_pending_to_dispatch(
+                data=request.data,
+                uid=user_uid
+            )
+               
         
-        user_info = self.users_collection.document(user_uid)
-        user_info_doc = user_info.get().to_dict()
-        pending_info = self.status_collection.document("pending")
-        pending_info_doc = pending_info.get().to_dict()
+        return Response(True)
+    
+    
+class UpdateToDelivered(PaymentStatus):
+    def post(self,request):
+        try:
+            info = auth.verify_id_token(request.data['idToken'])
+        except:
+            return Response(False) 
         
-        pending_info_doc["users"].remove(request.data["user_info"])
-        user_info_doc["pending"].remove(request.data["user_info"])
-        
-        current_transaction = dict()
-        
-        current_transaction["user_info"] = request.data["user_info"]
-        current_transaction["delivery_date"] = request.data["order_date_by_seller"]
-        
-        user_info_doc["dispatched"].append(current_transaction)
-        print("Dispatched : ",user_info_doc["dispatched"])
-        print("Pending : ",user_info_doc["pending"])
-        
-        payment_info = self.status_collection.document("dispatched")
-        payment_info_dict = payment_info.get().to_dict()
-        
-        payment_info_dict["users"].append(current_transaction)
-        
-        user_info.update({
-            "pending":user_info_doc["pending"],
-            "dispatched":user_info_doc["dispatched"]
-        })
-        
-        pending_info.update({
-            "users":pending_info_doc["users"]
-        })
-        
-        payment_info.update({
-            "users":payment_info_dict["users"]
-        })
+        update_dispatch_to_delivered(
+            data=request.data,
+            uid=request.data["user_data"]["user_info"]["uid"]
+        )
         
         
         return Response(True)

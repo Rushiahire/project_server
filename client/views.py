@@ -30,9 +30,6 @@ class FetchProduct(APIView):
             return random.sample(iphone,array_length)
     
     def get(self,request,category):
-        # print(laptops,camera,iphone,clock,watch)
-        # product_info = Product()
-        # product_list = product_info.get_product_list(category=category)
         product_list = self.get_homepage_category(category=category)
         return Response(product_list)
     

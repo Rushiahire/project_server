@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import NewProduct,SellerPanel,DeleteProduct,UpdateProduct,SellerAuthKeys,PaymentStatus,UpdateToDispatch
+from .views import NewProduct,SellerPanel,DeleteProduct,UpdateProduct,SellerAuthKeys,PaymentStatus,UpdateToDispatch,UpdateToDelivered
 
 
 urlpatterns = [
@@ -9,5 +9,6 @@ urlpatterns = [
     path('update',UpdateProduct.as_view(),name='UpdateProduct'),
     path('keys',SellerAuthKeys.as_view(),name="SellerAuthKeys"),
     path("payment/<str:status>",PaymentStatus.as_view(),name="PaymentStatus"),
-    path("dispatch",UpdateToDispatch.as_view(),name="UpdateToDispatch")
+    path("dispatch",UpdateToDispatch.as_view(),name="UpdateToDispatch"),
+    path("delivered",UpdateToDelivered.as_view(),name="UpdateToDelivered")
 ]

@@ -1,6 +1,7 @@
 from firebase_admin import firestore
 from seller.product import Product
 import datetime
+from payment.payment_status import update_cart_to_pending
 
 db = firestore.client()
 
@@ -113,55 +114,15 @@ class User():
         return data
     
     def move_cart_to_pending(self,payment_id,payment_id_local,shipping_address):
-        user_info = self.user_data.document(self.uid)
-        user_doc = user_info.get().to_dict()
         
-        total = float(user_doc["total"]) + 50
-        current_cart = user_doc["cart"]
-        current_shipping_address = user_doc["addresses"][shipping_address]
-        # print(total,current_cart,current_shipping_address)
-        
-        print("length :",len(user_doc["pending"]))
-        
-        current_transaction = {
-            "total":total,
-            "products":list(),
-            "shipping_address":current_shipping_address,
-            "payment_id":payment_id,
-            "payment_id_local":payment_id_local,
-            "payment_date":datetime.datetime.now().strftime("%d-%m-%Y")
-        }
+        update_cart_to_pending(
+            payment_id=payment_id,
+            payment_id_local=payment_id_local,
+            shipping_address=shipping_address,
+            uid=self.uid
+        )
         
         
-        if(len(user_doc["cart"])>0):
-            # user_doc["pending"].append(current_transaction)
-            
-            for product in user_doc['cart']:
-                    product_info = db.collection(product["category"]).document(product["product_id"]).get().to_dict()
-                    current_transaction["products"].append(product_info["title"])
-                    
-                   
-            current_transaction["uid"] = self.uid 
-            user_doc["pending"].append(current_transaction)
-            current_index = user_doc["pending"].index(current_transaction)
-            user_doc["pending"][current_index]["index"] = current_index
-            
-            user_info.update({
-                "total":0,
-                "cart":list(),
-                "pending":user_doc["pending"]
-            })
-            
-            pending_data = self.payment_data.document("pending")
-            pending_doc = pending_data.get().to_dict()
-            
-            
-            
-            pending_doc["users"].append(current_transaction)
-            pending_data.update({
-                "users":pending_doc["users"]
-            })
-            
             
             
         

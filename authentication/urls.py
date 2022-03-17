@@ -1,7 +1,7 @@
 
 from django.urls import path
 
-from .views import GetKeys,EmailUser,PhoneUser,UserInfo,UpdateAddressInfo
+from .views import GetKeys,EmailUser,PhoneUser,UserInfo,UpdateAddressInfo,PaymentStatus
 
 
 urlpatterns = [
@@ -10,5 +10,6 @@ urlpatterns = [
     # path('email_phone',UpdateEmailUser.as_view(),name="UpdateEmailUser"), # to update data of user logged in with email
     path('phone',PhoneUser.as_view(),name='phone user'),
     path('info',UserInfo.as_view(),name="userInfo"),
-    path('update_address',UpdateAddressInfo.as_view(),name="UpdateAddressInfo")
+    path('update_address',UpdateAddressInfo.as_view(),name="UpdateAddressInfo"),
+    path('payment/<str:status>',PaymentStatus.as_view(),name="PaymentStatus")
 ]
