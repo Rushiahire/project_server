@@ -23,15 +23,12 @@ def send_dispatch_email(email,info):
         District : {info["user_info"]["shipping_address"]["district"]}\n
         State : {info["user_info"]["shipping_address"]["state"]}\n
         Pincode : {info["user_info"]["shipping_address"]["pin"]}\n
-    
     '''
 
     send_mail(subject,message,email_from,recipient_list)
     print("email sent")
     
     
-
-
 def send_delivered_email(email,info):
     # print(info)
     subject = "Product Deliverd Info"
@@ -54,3 +51,5 @@ def send_delivered_email(email,info):
         Pincode : {info["user_info"]["shipping_address"]["pin"]}\n
     '''
     send_mail(subject,message,email_from,recipient_list)
+    
+    

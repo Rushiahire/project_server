@@ -1,27 +1,19 @@
-# from django.http import response
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from firebase_admin import firestore,auth
-# from project_server.project_server.settings import CACHE_TTL
-# import datetime
-# from links import STORAGE_BUCKET_URL
 from seller.product import Product
 from authentication.user import User
-# from products_common import laptops,iphone,camera,clock,watch
-# import random
-# from django.conf import settings
-# from django.core.cache.backends.base import DEFAULT_TIMEOUT
-# from django.views.decorators.cache import cache_page
 from django.core.cache import cache
+import random
+import math
 
 
-# CACHE_TTL = getattr(settings,"CACHE_TTL",DEFAULT_TIMEOUT)
+
 
 
 class FetchProduct(APIView):
     
     def get_homepage_contents(self,category):
-        # for index,category in enumerate(categories):
         db = firestore.client()
         category_collection = db.collection(category)
         product_list = category_collection.stream()
@@ -32,40 +24,19 @@ class FetchProduct(APIView):
                 'thumbnail' : doc['thumbnail_image']['url'],
                 'price' : doc['price'],
                 'title' : doc['title'],
-                # 'category':category,
-                # 'quantity' : doc['quantity'],
                 'key': product_doc.id
             }
             data_array.append(data)
         return data_array
     
-    # def get_homepage_category(self,category):
-    #     if category == 'laptop':
-    #         array_length = 6 if len(laptops) >= 6 else len(laptops)
-    #         return random.sample(laptops,array_length)
-    #     if category == "camera":
-    #         array_length = 6 if len(camera) >= 6 else len(camera)
-    #         return random.sample(camera,array_length)
-    #     if category == "clock":
-    #         array_length = 6 if len(clock) >= 6 else len(clock)
-    #         return random.sample(clock,array_length)
-    #     if category == "watch":
-    #         array_length = 6 if len(watch) >= 6 else len(watch)
-    #         return random.sample(watch,array_length)
-    #     if category == "iphone":
-    #         array_length = 6 if len(iphone) >= 6 else len(iphone)
-    #         return random.sample(iphone,array_length)
-    
+
     def get(self,request,category):
         if cache.get(category):
-            # print("comming from cache",category)
             product_list = cache.get(category)
         else:
-            # print("comming from database")
             product_list = self.get_homepage_contents(category=category)
-            cache.set(category,product_list)
-            # print("cached into memory now",category)
-        return Response(product_list)
+            cache.set(category,product_list[:6])
+        return Response(product_list[:6])
     
     
 class ProductDetails(APIView):
@@ -85,8 +56,6 @@ class AddReview(APIView):
         except:
             return Response(False)
         
-        
-        # print(info["email"])
         product_info = self.db.collection(request.data["category"])
         product_id = request.data['id']
         doc = product_info.document(product_id)
@@ -167,4 +136,33 @@ class CartBill(APIView):
         uid = info['uid']
         user = User(uid=uid)
         data = user.get_total_by_id()
+        return Response(data)
+    
+    
+class CategoryInfo(APIView):
+    def get(self,request,category,page_number):
+        elements_per_page = 10
+        start_index = elements_per_page * (int(page_number)-1)
+        end_index = elements_per_page * (int(page_number)) 
+        
+        category_key = f"{category}{page_number}"
+        number_of_pages_cache_label = f"cache{category}number_of_pages"
+        
+        if cache.get(category_key):
+            product_list = cache.get(category_key)
+            number_of_pages = cache.get(number_of_pages_cache_label)
+        else:
+            prodcut = Product()
+            product_list = prodcut.get_product_list(category)
+            number_of_pages = math.ceil(len(product_list)/elements_per_page)
+            if len(product_list) > 0:
+                product_list = product_list[start_index:end_index]
+                cache.set(category_key,product_list)
+                cache.set(number_of_pages_cache_label,number_of_pages)
+        
+        data = {
+            "product_list" : product_list,
+            "number_of_pages":number_of_pages
+        }
+        
         return Response(data)

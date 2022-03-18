@@ -5,6 +5,7 @@ from .product import Product
 from keys import adminFirebaseConfig
 from firebase_admin import auth,firestore
 from django.core.cache import cache
+import math
 
 from payment.payment_status import update_pending_to_dispatch,update_dispatch_to_delivered
 
@@ -21,23 +22,44 @@ class NewProduct(APIView):
             info = auth.verify_id_token(request.data['idToken'])
         except:
             return Response(False)
+        
+        key = f'seller{request.data["category"]}'
+        if cache.get(key):
+            cache.delete_many(keys=cache.keys(key))
+        
         new_product = Product()
         new_product.add_new_product(request_data=request)
         return Response(True)
     
 class SellerPanel(APIView):    
-    def get(self,request,category):
-        seller_category = f"seller{category}"
+    def get(self,request,category,page_number):
+        # print(page_number)
+        elements_per_page = 5
+        start_index = elements_per_page * (int(page_number)-1)
+        end_index = elements_per_page * (int(page_number)) 
+        seller_category = f"seller{category}{page_number}"
+        number_of_pages_cache_label = f"seller{category}number_of_pages"
         if cache.get(seller_category):
             # print(f"seller {category} coming from cache")
             product_list = cache.get(seller_category)
+            number_of_pages = cache.get(number_of_pages_cache_label)
         else:
             # print(f"seller {category} coming from database")
             products = Product()
             product_list = products.get_product_list(category=category)
-            cache.set(seller_category,product_list)
+            number_of_pages = math.ceil(len(product_list)/elements_per_page)
+            product_list = product_list[start_index:end_index]
             
-        return Response(product_list)
+            if len(product_list) > 0:
+                cache.set(seller_category,product_list)
+                cache.set(number_of_pages_cache_label,number_of_pages)
+        
+        data = {
+            "product_list" : product_list,
+            "number_of_pages" : number_of_pages
+        }
+        
+        return Response(data)
     
     
 class DeleteProduct(APIView):
@@ -46,7 +68,12 @@ class DeleteProduct(APIView):
             info = auth.verify_id_token(request.data['idToken'])
         except:
             return Response(False)
-        product = Product()
+        
+        key = f'seller{request.data["category"]}'
+        if cache.get(key):
+            cache.delete_many(keys=cache.keys(key))
+        
+        product = Product()      
         product.delete_product(request_data=request)
         return Response(True)
     

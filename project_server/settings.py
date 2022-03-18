@@ -147,7 +147,7 @@ EMAIL_HOST_PASSWORD = EMAIL_HOST_PASSWORD
 EMAIL_HOST_USER = EMAIL_HOST_USER
 
 
-CACHE_TTL = 60 * 2000 # Expiration time for cached Data
+CACHE_TTL = 60 * 1500 # Expiration time for cached Data
 
 CACHES = {
     "default": {

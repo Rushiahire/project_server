@@ -60,7 +60,6 @@ class Product:
         
         for key_name in key_list[7:]:
             image_data = request_data.data[key_name]
-            # print(image_data)
             image_content_type = image_data.content_type
             temp,extension = image_content_type.split('/')
             
@@ -88,10 +87,8 @@ class Product:
         doc_list = product_info.stream()
         data_list = list()
         for doc_name in doc_list:
-            # doc = product_info.document(doc_name.id).get().to_dict()
             doc = doc_name.to_dict()
-            # thumbnail_blob = self.bucket.blob(doc['thumbnail_image'])
-            # thumbnail_image = thumbnail_blob.generate_signed_url(datetime.timedelta(seconds=500), method='GET')
+            
             data = {
                 'thumbnail' : doc['thumbnail_image']['url'],
                 'price' : doc['price'],
@@ -105,7 +102,6 @@ class Product:
     
     
     def update_product(self,request_data):
-        # print(request_data.data['thumbnail'])
         product_info = self.db.collection(request_data.data["category"])
         doc_id = request_data.data['id']
         
@@ -151,12 +147,8 @@ class Product:
         if is_history:
             data['images']=[]
             for image_path in info['images']:
-                # blob = self.bucket.blob(image_path)
-                # product_image = blob.generate_signed_url(datetime.timedelta(seconds=300), method='GET')
                 data['images'].append(image_path["url"])
         else:
-            # blob = self.bucket.blob()
-            # thumbnail_image = blob.generate_signed_url(datetime.timedelta(seconds=300), method='GET')
             data['thumbnail'] = info['thumbnail_image']['url']
             
         return data
