@@ -35,8 +35,8 @@ class FetchProduct(APIView):
             product_list = cache.get(category)
         else:
             product_list = self.get_homepage_contents(category=category)
-            cache.set(category,product_list[:6])
-        return Response(product_list[:6])
+            cache.set(category,product_list[:5])
+        return Response(product_list[:5])
     
     
 class ProductDetails(APIView):

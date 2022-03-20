@@ -10,36 +10,52 @@ class GetKeys(APIView):
     def get(self,request):
         return Response(firebaseConfig)
     
-class EmailUser(APIView):
+# class EmailUser(APIView):
+#     def post(self,request):
+#         try:
+#             info = auth.verify_id_token(request.data['idToken'])
+#         except:
+#             return Response(None)
+        
+        
+#         print(request.data['userData'])
+#         isNew = request.data['userData']["additionalUserInfo"]["isNewUser"]
+#         uid = info['uid']
+#         if isNew:
+#             new_user = User(uid = uid)
+#             new_user.add_new_user()
+#             return Response(True)
+#         return Response(False)
+    
+    
+# class PhoneUser(APIView):
+#     def post(self,request):
+#         try:
+#             info = auth.verify_id_token(request.data['idToken'])
+#         except:
+#             return None
+        
+#         print(request.data['userData'])
+#         isNew = request.data['userData'][ "_tokenResponse"]['isNewUser']
+#         uid = info['uid']
+#         if isNew:
+#             new_user = User(uid = uid)
+#             new_user.add_new_user()
+#             return Response(True)
+#         return Response(False)
+
+class NewUser(APIView):
     def post(self,request):
         try:
             info = auth.verify_id_token(request.data['idToken'])
         except:
             return Response(None)
         
-        isNew = request.data['userData']["additionalUserInfo"]["isNewUser"]
+        print(info["uid"])
         uid = info['uid']
-        if isNew:
-            new_user = User(uid = uid)
-            new_user.add_new_user()
-            return Response(True)
-        return Response(False)
-    
-    
-class PhoneUser(APIView):
-    def post(self,request):
-        try:
-            info = auth.verify_id_token(request.data['idToken'])
-        except:
-            return None
-        
-        isNew = request.data['userData'][ "_tokenResponse"]['isNewUser']
-        uid = info['uid']
-        if isNew:
-            new_user = User(uid = uid)
-            new_user.add_new_user()
-            return Response(True)
-        return Response(False)
+        new_user = User(uid = uid)
+        new_user.add_new_user()
+        return Response(True)
         
 
 class  UserInfo(APIView):

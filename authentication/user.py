@@ -105,6 +105,7 @@ class User():
     def get_total_by_id(self):
         user_info = self.user_data.document(self.uid)
         user_doc = user_info.get().to_dict()
+        print(user_doc)
         delivery_charges = 50
         data = {
             'charges':delivery_charges,

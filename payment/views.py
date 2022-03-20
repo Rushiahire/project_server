@@ -42,7 +42,7 @@ class Initiate(APIView):
         try:
             info = auth.verify_id_token(request.data['idToken'])
         except:
-            return response(None)
+            return Response(None)
         uid = info["uid"]
         user_info = db.collection("user_data").document(uid).get().to_dict()
         user_data = auth.get_user(uid)
