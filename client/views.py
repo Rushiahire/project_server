@@ -1,3 +1,5 @@
+from itertools import product
+from urllib import request
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from firebase_admin import firestore,auth
@@ -6,9 +8,6 @@ from authentication.user import User
 from django.core.cache import cache
 import random
 import math
-
-
-
 
 
 class FetchProduct(APIView):
@@ -63,7 +62,7 @@ class AddReview(APIView):
         doc_data = doc.get().to_dict()
         review_list = doc_data['reviews']
         new_review = {
-            'user': info["email"],
+            # 'user': info["email"],
             'title':request.data['title'],
             'description':request.data['description'],
             'rating':int(request.data['rating'])
@@ -86,16 +85,21 @@ class FetchReview(AddReview):
     
 class UpdateCart(APIView):
     def post(self,request):
+        # print(request.data)
+        # info = auth.verify_id_token(request.data['idToken'])
         try:
+            # print("verifing idToken")
+            # print(request.data)
             info = auth.verify_id_token(request.data['idToken'])
+            # print("Done")
         except:
+            # print()
             return Response(False)
         
         uid = info['uid']
-        user = User(uid = uid)
-        
+        user = User(uid = uid)   
+    
         product_info = {
-           
             "product_id" : request.data['product_id'],
             "quantity" : request.data['quantity'],
             "price" : request.data["price"]
@@ -103,14 +107,25 @@ class UpdateCart(APIView):
 
         if(request.data['add']):
              product_info["category"] = request.data["category"]
-        
+        add = ""
+        is_qty = ""
+        if request.data["add"] in [1,True,"True","true"]:
+            add = True
+        else:
+            add = False
+              
+        if request.data["is_qty"] in [1,True,"True","true"]:
+            is_qty = True
+        else:
+            is_qty = False
         
         user.update_cart(
             product_info = product_info,
-            add = request.data['add'],
-            index = request.data['index'],
-            is_qty = request.data['is_qty']
+            add = add,
+            index = int(request.data['index']),
+            is_qty = is_qty
         )
+        # print("addded to cart")
         return Response(True)
     
 class FetchCart(APIView):

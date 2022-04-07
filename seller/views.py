@@ -39,20 +39,25 @@ class SellerPanel(APIView):
         end_index = elements_per_page * (int(page_number)) 
         seller_category = f"seller{category}{page_number}"
         number_of_pages_cache_label = f"seller{category}number_of_pages"
-        if cache.get(seller_category):
-            # print(f"seller {category} coming from cache")
-            product_list = cache.get(seller_category)
-            number_of_pages = cache.get(number_of_pages_cache_label)
-        else:
-            # print(f"seller {category} coming from database")
-            products = Product()
-            product_list = products.get_product_list(category=category)
-            number_of_pages = math.ceil(len(product_list)/elements_per_page)
-            product_list = product_list[start_index:end_index]
+        # if cache.get(seller_category):
+        #     # print(f"seller {category} coming from cache")
+        #     product_list = cache.get(seller_category)
+        #     number_of_pages = cache.get(number_of_pages_cache_label)
+        # else:
+        #     # print(f"seller {category} coming from database")
+        #     products = Product()
+        #     product_list = products.get_product_list(category=category)
+        #     number_of_pages = math.ceil(len(product_list)/elements_per_page)
+        #     product_list = product_list[start_index:end_index]
             
-            if len(product_list) > 0:
-                cache.set(seller_category,product_list)
-                cache.set(number_of_pages_cache_label,number_of_pages)
+        #     if len(product_list) > 0:
+        #         cache.set(seller_category,product_list)
+        #         cache.set(number_of_pages_cache_label,number_of_pages)
+        
+        products = Product()
+        product_list = products.get_product_list(category=category)
+        number_of_pages = math.ceil(len(product_list)/elements_per_page)
+        product_list = product_list[start_index:end_index]
         
         data = {
             "product_list" : product_list,

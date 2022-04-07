@@ -26,7 +26,7 @@ class Initiate(APIView):
                     purpose="shopping from ShopHeaven",
                     send_email=False,
                     email=email,
-                    redirect_url=PAYMENT_REDIRECT_URL  
+                    redirect_url=PAYMENT_REDIRECT_URL
                 )
                 print(payment_response)
             else:

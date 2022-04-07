@@ -14,6 +14,7 @@ class User():
         self.uid = uid  
         
     def add_new_user(self):
+        print("creating new user")
         new_document = self.user_data.document(self.uid)
         new_data = {
             "uid" : self.uid,
@@ -28,15 +29,25 @@ class User():
         }
         new_document.set(new_data)
         
+        
+    def if_user_exists_in_db(self):
+        return self.uid in [k.id for k in self.user_data.stream()]
+        
     def fetch_info_by_id(self):
+        if not self.if_user_exists_in_db():
+            self.add_new_user()
         user_data_document = self.user_data.document(self.uid).get().to_dict()
         return user_data_document
     
     def delete_by_id(self):
-        self.user_data.document(self.uid).delete()
+        if self.if_user_exists_in_db():
+            self.user_data.document(self.uid).delete()
         return "deleted"
     
     def update_address_id(self,value,add,index=-1):
+        if not self.if_user_exists_in_db():
+            self.add_new_user()
+            
         user_info = self.user_data.document(self.uid)
         user_doc = user_info.get().to_dict()
         
@@ -51,15 +62,17 @@ class User():
         
         
     def update_cart(self,product_info,add,index=-1,is_qty=False):
+        if not self.if_user_exists_in_db():
+            self.add_new_user()
+            
         user_info = self.user_data.document(self.uid)
         user_doc = user_info.get().to_dict()
-
         if add:
             if len(user_doc['cart']) > 0 and product_info['product_id'] in [product['product_id'] for product in user_doc['cart']]:
                 for index in range(len(user_doc['cart'])):
                     if user_doc['cart'][index]['product_id'] == product_info['product_id']:
                         user_doc['total']+=float(product_info['price'])*float(user_doc['cart'][index]['quantity'])
-                        user_doc['cart'][index]['quantity']+=1
+                        user_doc['cart'][index]['quantity'] = int(user_doc['cart'][index]['quantity']) + 1
                         break
             else:    
                 user_doc['total']+=float(product_info['price'])*float(product_info["quantity"])
@@ -68,7 +81,6 @@ class User():
             qty = int(user_doc['cart'][index]['quantity'])
             new_qty = int(product_info["quantity"])
             price = float(product_info["price"])
-            print(price)
             user_doc['total'] = user_doc['total'] -  qty * price
             user_doc['total'] = user_doc['total'] + new_qty * price
             user_doc['cart'][index]['quantity'] = new_qty
@@ -85,6 +97,9 @@ class User():
         })
         
     def get_cart_by_id(self):
+        if not self.if_user_exists_in_db():
+            self.add_new_user()
+        
         user_info = self.user_data.document(self.uid)
         user_doc = user_info.get().to_dict()
         cart_info = list()
@@ -103,9 +118,12 @@ class User():
     
     
     def get_total_by_id(self):
+        
+        if not self.if_user_exists_in_db():
+            self.add_new_user()
+        
         user_info = self.user_data.document(self.uid)
         user_doc = user_info.get().to_dict()
-        print(user_doc)
         delivery_charges = 50
         data = {
             'charges':delivery_charges,
@@ -115,6 +133,9 @@ class User():
         return data
     
     def move_cart_to_pending(self,payment_id,payment_id_local,shipping_address):
+        
+        if not self.if_user_exists_in_db():
+            self.add_new_user()
         
         update_cart_to_pending(
             payment_id=payment_id,

@@ -10,39 +10,6 @@ class GetKeys(APIView):
     def get(self,request):
         return Response(firebaseConfig)
     
-# class EmailUser(APIView):
-#     def post(self,request):
-#         try:
-#             info = auth.verify_id_token(request.data['idToken'])
-#         except:
-#             return Response(None)
-        
-        
-#         print(request.data['userData'])
-#         isNew = request.data['userData']["additionalUserInfo"]["isNewUser"]
-#         uid = info['uid']
-#         if isNew:
-#             new_user = User(uid = uid)
-#             new_user.add_new_user()
-#             return Response(True)
-#         return Response(False)
-    
-    
-# class PhoneUser(APIView):
-#     def post(self,request):
-#         try:
-#             info = auth.verify_id_token(request.data['idToken'])
-#         except:
-#             return None
-        
-#         print(request.data['userData'])
-#         isNew = request.data['userData'][ "_tokenResponse"]['isNewUser']
-#         uid = info['uid']
-#         if isNew:
-#             new_user = User(uid = uid)
-#             new_user.add_new_user()
-#             return Response(True)
-#         return Response(False)
 
 class NewUser(APIView):
     def post(self,request):
@@ -65,6 +32,7 @@ class  UserInfo(APIView):
         except:
             return Response(None)
         
+       
         uid=info['uid'] 
         user = User(uid=uid)
         data = user.fetch_info_by_id()
@@ -78,12 +46,28 @@ class UpdateAddressInfo(APIView):
         except:
             return Response(False)
         
+    
+        
+        if(int(request.data["isMobile"]) == 1):
+            info_doc = {
+                "line1":request.data["line1"],
+                "line2" : request.data["line2"],
+                "city" : request.data["city"],
+                "district" : request.data["district"],
+                "state" : request.data["state"],
+                "pin" : request.data["pin"]
+            }
+
+        else:
+            info_doc = request.data["address"]
+            
+        
         uid=info['uid']
         user = User(uid = uid)
         user.update_address_id(
-            value=request.data['address'],
-            add=request.data['add'],
-            index= request.data['index'] if request.data['index'] != '' else request.data['index']
+            value=info_doc,
+            add=request.data['add'] in [True,"True","true",1],
+            index= int(request.data['index']) if request.data['index'] != '' else -1
         )
         
         return Response(True)
