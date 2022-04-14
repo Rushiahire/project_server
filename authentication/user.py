@@ -132,14 +132,13 @@ class User():
         }
         return data
     
-    def move_cart_to_pending(self,payment_id,payment_id_local,shipping_address):
+    def move_cart_to_pending(self,payment_id,shipping_address):
         
         if not self.if_user_exists_in_db():
             self.add_new_user()
         
         update_cart_to_pending(
             payment_id=payment_id,
-            payment_id_local=payment_id_local,
             shipping_address=shipping_address,
             uid=self.uid
         )

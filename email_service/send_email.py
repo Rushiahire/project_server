@@ -30,7 +30,6 @@ def send_dispatch_email(email,info):
     
     
 def send_delivered_email(email,info):
-    # print(info)
     subject = "Product Deliverd Info"
     email_from = EMAIL_HOST_USER
     recipient_list = [email]

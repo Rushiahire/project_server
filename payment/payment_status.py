@@ -6,10 +6,10 @@ from email_service.send_email import send_dispatch_email,send_delivered_email
 db = firestore.client()
 user_data = db.collection('user_data')
 payment_data = db.collection('payment_data')
-# status_collection = db.collection("payment_data")
 
 
-def update_cart_to_pending(payment_id,payment_id_local,shipping_address,uid):
+
+def update_cart_to_pending(payment_id,shipping_address,uid):
     global db
     global user_data
     global payment_data
@@ -20,15 +20,12 @@ def update_cart_to_pending(payment_id,payment_id_local,shipping_address,uid):
     total = float(user_doc["total"]) + 50
     current_cart = user_doc["cart"]
     current_shipping_address = user_doc["addresses"][shipping_address]
-    
-    print("length :",len(user_doc["pending"]))
-    
+        
     current_transaction = {
         "total":total,
         "products":list(),
         "shipping_address":current_shipping_address,
         "payment_id":payment_id,
-        "payment_id_local":payment_id_local,
         "payment_date":datetime.datetime.now().strftime("%d-%m-%Y")
     }
     

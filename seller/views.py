@@ -33,27 +33,10 @@ class NewProduct(APIView):
     
 class SellerPanel(APIView):    
     def get(self,request,category,page_number):
-        # print(page_number)
         elements_per_page = 5
         start_index = elements_per_page * (int(page_number)-1)
         end_index = elements_per_page * (int(page_number)) 
-        seller_category = f"seller{category}{page_number}"
-        number_of_pages_cache_label = f"seller{category}number_of_pages"
-        # if cache.get(seller_category):
-        #     # print(f"seller {category} coming from cache")
-        #     product_list = cache.get(seller_category)
-        #     number_of_pages = cache.get(number_of_pages_cache_label)
-        # else:
-        #     # print(f"seller {category} coming from database")
-        #     products = Product()
-        #     product_list = products.get_product_list(category=category)
-        #     number_of_pages = math.ceil(len(product_list)/elements_per_page)
-        #     product_list = product_list[start_index:end_index]
-            
-        #     if len(product_list) > 0:
-        #         cache.set(seller_category,product_list)
-        #         cache.set(number_of_pages_cache_label,number_of_pages)
-        
+                       
         products = Product()
         product_list = products.get_product_list(category=category)
         number_of_pages = math.ceil(len(product_list)/elements_per_page)
@@ -103,15 +86,13 @@ class PaymentStatus(APIView):
     
     def get_pending_info(self):
         payment_info = self.status_collection.document("pending")
-        payment_dict = payment_info.get().to_dict()
-        # print(payment_dict)            
+        payment_dict = payment_info.get().to_dict()            
             
         return payment_dict["users"]
     
     def get_dispatch_status(self):
         payment_info = self.status_collection.document("dispatched")
-        payment_dict = payment_info.get().to_dict()
-        # print(payment_dict)            
+        payment_dict = payment_info.get().to_dict()          
         return payment_dict["users"]
     
     
@@ -133,7 +114,6 @@ class PaymentStatus(APIView):
         
         if status == "dispatched":
             dispatch_info = self.get_dispatch_status()
-            # print(dispatch_info)
             return Response(dispatch_info)
         
         if status == "delivered":

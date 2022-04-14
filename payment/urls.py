@@ -3,6 +3,6 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('initiate',views.Initiate.as_view(),name="payment"),
-    path('success',views.PaymentSuccess.as_view(),name="PaymentSuccess")
+    path("keys",views.RazorPayKeys.as_view(),name="RazorPayKeys"),
+    path('success',views.PaymentSuccess.as_view(),name="PaymentSuccess"),
 ]

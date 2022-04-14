@@ -85,15 +85,9 @@ class FetchReview(AddReview):
     
 class UpdateCart(APIView):
     def post(self,request):
-        # print(request.data)
-        # info = auth.verify_id_token(request.data['idToken'])
         try:
-            # print("verifing idToken")
-            # print(request.data)
             info = auth.verify_id_token(request.data['idToken'])
-            # print("Done")
         except:
-            # print()
             return Response(False)
         
         uid = info['uid']
@@ -125,7 +119,6 @@ class UpdateCart(APIView):
             index = int(request.data['index']),
             is_qty = is_qty
         )
-        # print("addded to cart")
         return Response(True)
     
 class FetchCart(APIView):
